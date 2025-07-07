@@ -32,7 +32,7 @@ func main() {
 	http.Handle("/graphql", handler)
 
 	// Levantar el servidor
-	port := os.Getenv("PORT")
+	port := os.Getenv("PORT_LIST")
 	if port == "" {
 		port = "4002"
 	}
