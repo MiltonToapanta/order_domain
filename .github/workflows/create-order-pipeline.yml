@@ -5,7 +5,7 @@ on:
     branches: ["qa"]
     paths: 
         - 'create_order_service/**'
-        - '.github/workflows/create_order_pipeline.yml'
+        - '.github/workflows/create-order-pipeline.yml'
 
 jobs:
   build-and-push-image:
