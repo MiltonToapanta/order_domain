@@ -24,7 +24,7 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          echo "Pushing Docker image to Docker Hub..."
+          echo "Pushing Docker image to Docker Hub...."
           docker push milton11a/create-order-service:latest
 
   deploy-to-ec2:
