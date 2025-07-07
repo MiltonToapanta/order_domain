@@ -13,9 +13,6 @@ COPY . .
 # Compile the binary
 RUN go build -o main .
  
-# If .env exists, it is copied to env.file; otherwise, an empty file is created.
-RUN if [ -f .env ]; then cp .env env.file; else touch env.file; fi
- 
 # Final phase
 FROM alpine:latest
  
