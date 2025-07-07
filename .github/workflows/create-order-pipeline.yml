@@ -1,0 +1,75 @@
+name: Pipeline for Order Add Microservice
+
+on:
+  push:
+    branches: ["qa"]
+    paths: 
+        - 'create_order_service/**'
+        - '.github/workflows/create_order_pipeline.yml'
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        run: |
+          echo "Building Docker image..."
+          docker build -t milton11a/create-order-service:latest .
+
+      - name: Push Docker Image
+        run: |
+          echo "Pushing Docker image to Docker Hub..."
+          docker push milton11a/create-order-service:latest
+
+  deploy-to-ec2:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH key for EC2 access
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+
+      - name: SSH into EC2 and deploy container
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_DNS }} << 'EOF'
+            # Verificar e instalar Docker si es necesario.
+            if ! command -v docker &> /dev/null; then
+              sudo yum update -y
+              sudo yum install -y docker
+              sudo systemctl start docker
+              sudo systemctl enable docker
+            fi
+
+            # Download the image
+            sudo docker pull milton11a/create-order-service:latest
+
+            # Stop and remove previous container
+            sudo docker stop create-order-service || true
+            sudo docker rm create-order-service || true
+
+            # Generate .env file
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+            echo "PORT=${{ secrets.PORT }}" >> .env
+
+            cat .env
+            # Run new container
+            sudo docker run -d --name create-order-service \
+              --env-file .env \
+              -p 4001:4001 \
+              milton11a/create-order-service:latest
+              
+            # Eliminar .env inmediatamente después (¡importante!)
+            rm -f .env
+            echo ".env eliminado correctamente."
+          EOF
