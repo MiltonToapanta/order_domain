@@ -4,7 +4,7 @@ on:
   push:
     branches: ["qa"]
     paths: 
-        - 'create_order_service/**'
+        - 'list_order_service/**'
         - '.github/workflows/list-order-pipeline.yml'
 
 jobs:
