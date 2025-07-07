@@ -60,13 +60,13 @@ jobs:
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
             echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-            echo "PORT=${{ secrets.PORT }}" >> .env
+            echo "PORT_CREATE=${{ secrets.PORT_CREATE }}" >> .env
 
             cat .env
             # Run new container
             sudo docker run -d --name create-order-service \
               --env-file .env \
-              -p 4001:4001 \
+              -p ${{ secrets.PORT_CREATE }}:${{ secrets.PORT_CREATE }} \
               milton11a/create-order-service:latest
               
             # Eliminar .env inmediatamente después (¡importante!)
