@@ -3,8 +3,8 @@ FROM golang:1.23.4-alpine as builder
  
 WORKDIR /app
  
-# Copy dependency files and download modules
-COPY go.mod go.sum ./
+# Copy dependency files and download modules.
+COPY go.mod ./
 RUN go mod tidy
  
 # Copy the entire project (including .env locally, if it exists)
