@@ -20,7 +20,7 @@ jobs:
       - name: Build Docker Image
         run: |
           echo "Building Docker image..."
-          docker build -t milton11a/create-order-service:latest .
+          docker build -t milton11a/create-order-service:latest ./create_order_service
 
       - name: Push Docker Image
         run: |
