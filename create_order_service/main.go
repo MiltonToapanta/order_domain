@@ -28,9 +28,9 @@ func main() {
 	})
 	http.Handle("/graphql", handler)
 	// Levantar el servidor
-	port := os.Getenv("PORT")
+	port := os.Getenv("PORT_CREATE")
 	if port == "" {
-		port = "4000"
+		port = "4001"
 	}
 	fmt.Println("Servidor GraphQL ejecutándose en puerto", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
